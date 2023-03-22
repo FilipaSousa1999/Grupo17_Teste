@@ -1,5 +1,5 @@
 import java.io.BufferedReader;
-import  jaca.io.BufferedWriter;
+import java.io.BufferedWriter;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -33,7 +33,7 @@ public class ServerThread extends Thread {
         this.con = con;
         try {
             in = con.getInputStream();
-            inr = new InputStremReader();
+            inr = new InputStreamReader(in);
             bfr = new  BufferedReader(inr);
         } catch ( IOException e ) {
             e.printStackTrace ( );
@@ -46,12 +46,12 @@ public class ServerThread extends Thread {
     public void run ( ) {
         try {
             String msg;
-            OutputStrem ou = this.con.getOutputStream();
-            Writter ouw = new OutputStreamWriter(ou);
-            BufferedWriter bfw = new BufferedWriter(ouw);
+            OutputStream ou = this.con.getOutputStream();
+            Writer out = new OutputStreamWriter(ou);
+            BufferedWriter bfw = new BufferedWriter(out);
             clientes.add(bfw);
             nome = msg = bfr.readLine();
-        while ( !"Sair" .equalsIgnoreCasa(msg) && msg!=null ) {
+        while ( !"Sair" .equalsIgnoreCase(msg) && msg!=null ) {
           msg = bfr.readLine();
           sendToAll(bfw, msg);
           System.out.println(msg);
@@ -77,26 +77,27 @@ public void sendToAll(BufferedWriter bwSaida, String msg) throws IOException {
         }
     }
 }
-    public static void conecao ( String[] args ) {
+
+    public static void main (String[] args) {
         //ServerThread server = new ServerThread ( 8888 );
         try {
             //creates the objects to instantiate the server
-            JLabel lblMessage = new JLabel ("Porta do servidor: ");
+            JLabel lblMessage = new JLabel("Porta do servidor: ");
             JTextField txtPorta = new JTextField("8888");
             Object[] texts = {lblMessage, txtPorta};
             JOptionPane.showMessageDialog(null, texts);
-            server = new ServerSocket(Integer.parseInt(txtPorta.getTest()));
+            server = new ServerSocket(Integer.parseInt(txtPorta.getText()));
             clientes = new ArrayList<BufferedWriter>();
-            JOptionPane.showMessage(null, "Servidor ativo na porta: ")+txtPorta.getText());
+            //JOptionPane.showMessage(null, "Servidor ativo na porta: ")+txtPorta.getText();
 
-            while (true){
+            while (true) {
                 System.out.println("Aguardar conexão...");
                 Socket con = server.accept();
-                System.out.println ("Cliente conetado...");
-                Thread t = new Servidor (con);
+                System.out.println("Cliente conetado...");
+                Thread t = new ServerThread(con);
                 t.start();
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
